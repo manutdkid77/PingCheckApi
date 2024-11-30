@@ -1,4 +1,6 @@
+using PingCheckApi.Hubs;
 using PingCheckApi.Services;
+using PingCheckApi.Services.Background;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddTransient<IPingService, PingService>();
+
+// this ensure the PingBackgroundService, starts automatically when the application starts
+// and closes automatically when the application shutsdown
+builder.Services.AddHostedService<PingBackgroundService>();
 
 var app = builder.Build();
 
@@ -25,5 +33,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<PingHub>("/pinghub");
+
 
 app.Run();
