@@ -1,6 +1,6 @@
 export interface PingStatusData {
   time: string;
-  status: number;
+  status: boolean;
 }
 
 export interface PingStatusChartProps {

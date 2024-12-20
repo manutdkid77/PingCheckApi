@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
-import { PingStatusData } from "../interfaces/PingStatusChartProps";
 import Header from "./Header";
 import PingStatusChart from "./PingStatusChart";
 import getCurrentTimeForGraph from "@/helpers/timeHelper";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
 export default function Dashboard() {
   const [chartData, setChartData] = useState([
-    { time: getCurrentTimeForGraph(), status: 0 },
+    { time: getCurrentTimeForGraph(), status: false },
   ]);
+
+  const [connection, setConnection] = useState<HubConnection | null>(null);
 
   const setFavIcon = (iconName: string) => {
     const link: HTMLLinkElement | null =
@@ -18,24 +20,28 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const documentTitle = document.title;
+    const connection = new HubConnectionBuilder()
+      .withUrl("https://localhost:7150/pinghub")
+      .build();
 
-    setInterval(() => {
-      const status = Math.round(Math.random());
+    connection.start().then(() => {
+      setConnection(connection);
+    });
 
-      if (status === 1) {
+    connection.on("ReceiveStatus", (isOnline: boolean) => {
+      if (isOnline) {
         setFavIcon("online.svg");
-        document.title = `🟢 ${documentTitle}`;
+        document.title = `🟢`;
       } else {
         setFavIcon("offline.svg");
-        document.title = `🔴 ${documentTitle}`;
+        document.title = `🔴`;
       }
 
       setChartData((prevItem) => [
         ...prevItem,
-        { time: getCurrentTimeForGraph(), status: status },
+        { time: getCurrentTimeForGraph(), status: isOnline },
       ]);
-    }, 1000);
+    });
   }, []);
 
   return (
