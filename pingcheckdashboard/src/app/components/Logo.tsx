@@ -14,7 +14,7 @@ export default function Logo({ pageUrl }: LogoProps) {
   };
 
   return (
-    <span className="mr-5" onClick={logoClicked}>
+    <span className="mr-5 cursor-pointer" onClick={logoClicked}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 512 512"
