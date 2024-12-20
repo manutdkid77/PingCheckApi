@@ -36,6 +36,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+// configure Kestrel to listen on port 80
+builder.WebHost.UseKestrel(options =>
+{
+    // listen on port 80
+    options.ListenAnyIP(80);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
