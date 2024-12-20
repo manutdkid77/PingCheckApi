@@ -19,8 +19,8 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Build and export the Next.js application
-RUN npm run build && npm run export
+# Build the Next.js application as a static export
+RUN npm run build
 
 # Use a lightweight nginx image for serving the static files
 FROM nginx:alpine
