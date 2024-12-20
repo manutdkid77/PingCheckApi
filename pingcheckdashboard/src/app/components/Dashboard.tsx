@@ -49,7 +49,7 @@ export default function Dashboard() {
         await connection.start();
         setConnection(connection);
       } catch (err) {
-       // console.error("Error connecting to SignalR hub:", err);
+        console.error("Error connecting to SignalR hub:", err);
       }
     };
 
