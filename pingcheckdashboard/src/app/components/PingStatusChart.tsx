@@ -26,7 +26,7 @@ const PingStatusChart: React.FC<PingStatusChartProps> = ({ data }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function (value: any) {
+          callback: (value: string | number) => {
             return value === 1 ? "On" : "Off";
           },
           stepSize: 1,
