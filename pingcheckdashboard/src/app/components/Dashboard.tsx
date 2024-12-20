@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import Header from "./Header";
 import PingStatusChart from "./PingStatusChart";
 import getCurrentTimeForGraph from "@/helpers/timeHelper";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  HubConnectionState,
+} from "@microsoft/signalr";
 
 export default function Dashboard() {
   const [chartData, setChartData] = useState([
@@ -20,28 +24,41 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const connection = new HubConnectionBuilder()
-      .withUrl("https://localhost:7150/pinghub")
-      .build();
+    const connectToHub = async () => {
+      try {
+        const connection = new HubConnectionBuilder()
+          .withUrl("https://localhost:7150/pinghub")
+          .withAutomaticReconnect()
+          .build();
 
-    connection.start().then(() => {
-      setConnection(connection);
-    });
+        connection.on("ReceiveStatus", (isOnline: boolean) => {
+          if (isOnline) {
+            setFavIcon("online.svg");
+            document.title = `🟢`;
+          } else {
+            setFavIcon("offline.svg");
+            document.title = `🔴`;
+          }
 
-    connection.on("ReceiveStatus", (isOnline: boolean) => {
-      if (isOnline) {
-        setFavIcon("online.svg");
-        document.title = `🟢`;
-      } else {
-        setFavIcon("offline.svg");
-        document.title = `🔴`;
+          setChartData((prevItem) => [
+            ...prevItem,
+            { time: getCurrentTimeForGraph(), status: isOnline },
+          ]);
+        });
+
+        await connection.start();
+        setConnection(connection);
+      } catch (err) {
+       // console.error("Error connecting to SignalR hub:", err);
       }
+    };
 
-      setChartData((prevItem) => [
-        ...prevItem,
-        { time: getCurrentTimeForGraph(), status: isOnline },
-      ]);
-    });
+    connectToHub();
+
+    return () => {
+      if (connection && connection.state === HubConnectionState.Connected)
+        connection.stop();
+    };
   }, []);
 
   return (
