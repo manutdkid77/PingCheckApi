@@ -26,8 +26,13 @@ export default function Dashboard() {
   useEffect(() => {
     const connectToHub = async () => {
       try {
+        const signalrUrl = process.env.NEXT_PUBLIC_SIGNALR_URL || "";
+
+        if (!signalrUrl || signalrUrl.trim().length === 0)
+          throw new Error("The signalrUrl cannot be null or empty.");
+
         const connection = new HubConnectionBuilder()
-          .withUrl("https://localhost:7150/pinghub")
+          .withUrl(signalrUrl)
           .withAutomaticReconnect()
           .build();
 
