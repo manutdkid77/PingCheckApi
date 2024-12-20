@@ -8,12 +8,14 @@ namespace PingCheckApi.Services.Background
         readonly IHubContext<PingHub> _pingHubContext;
         readonly IConfiguration _configuration;
         readonly IPingService _pingService;
+        readonly IWebHostEnvironment _webHostEnvironment;
 
-        public PingBackgroundService(IHubContext<PingHub> pingHubContext, IConfiguration configuration, IPingService pingService)
+        public PingBackgroundService(IHubContext<PingHub> pingHubContext, IConfiguration configuration, IPingService pingService, IWebHostEnvironment webHostEnvironment)
         {
             _pingHubContext = pingHubContext;
             _configuration = configuration;
             _pingService = pingService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -26,7 +28,8 @@ namespace PingCheckApi.Services.Background
             while (!stoppingToken.IsCancellationRequested)
             {
                 var pingResult = await _pingService.CheckInternet(hostName);
-                Console.WriteLine(pingResult);
+                if (_webHostEnvironment.IsDevelopment())
+                    Console.WriteLine(pingResult);
                 await _pingHubContext.Clients.All.SendAsync("ReceiveStatus", pingResult);
 
                 // Delay for half a second between pings
