@@ -36,6 +36,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+// since we are running on docker container which is isolated,
 // configure Kestrel to listen on port 80
 builder.WebHost.UseKestrel(options =>
 {
