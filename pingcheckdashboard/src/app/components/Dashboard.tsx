@@ -1,15 +1,26 @@
+"use client";
+import { useEffect, useState } from "react";
 import { PingStatusData } from "../interfaces/PingStatusChartProps";
 import Header from "./Header";
 import PingStatusChart from "./PingStatusChart";
-
-const chartData: PingStatusData[] = [
-  { time: "10:00", status: 1 },
-  { time: "10:05", status: 1 },
-  { time: "10:10", status: 1 },
-  { time: "10:20", status: 0 },
-];
+import getCurrentTimeForGraph from "@/helpers/timeHelper";
 
 export default function Dashboard() {
+  const [chartData, setChartData] = useState([
+    { time: getCurrentTimeForGraph(), status: 0 },
+  ]);
+
+  useEffect(() => {
+    setInterval(() => {
+      const status = Math.round(Math.random());
+
+      setChartData((prevItem) => [
+        ...prevItem,
+        { time: getCurrentTimeForGraph(), status: status },
+      ]);
+    }, 1000);
+  }, []);
+
   return (
     <div className="container px-5 py-5 mx-auto">
       <Header
