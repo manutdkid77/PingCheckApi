@@ -10,9 +10,26 @@ export default function Dashboard() {
     { time: getCurrentTimeForGraph(), status: 0 },
   ]);
 
+  const setFavIcon = (iconName: string) => {
+    const link: HTMLLinkElement | null =
+      document.querySelector("link[rel*='icon']");
+
+    if (link) link.href = `${iconName}`;
+  };
+
   useEffect(() => {
+    const documentTitle = document.title;
+
     setInterval(() => {
       const status = Math.round(Math.random());
+
+      if (status === 1) {
+        setFavIcon("online.svg");
+        document.title = `🟢 ${documentTitle}`;
+      } else {
+        setFavIcon("offline.svg");
+        document.title = `🔴 ${documentTitle}`;
+      }
 
       setChartData((prevItem) => [
         ...prevItem,
