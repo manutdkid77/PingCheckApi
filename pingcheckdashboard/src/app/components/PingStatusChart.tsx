@@ -10,10 +10,13 @@ const PingStatusChart: React.FC<PingStatusChartProps> = ({ data }) => {
       {
         label: "Ping Status",
         data: data.map((x) => x.status),
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        fill: false,
+        borderColor: "#f7f1e3",
+        backgroundColor: "rgba(75, 192, 192, 0.1)",
+        fill: true,
         tension: 0.1,
+        pointBackgroundColor: data.map((x) =>
+          !x.status ? "#e74c3c" : "#2ecc71"
+        ),
       },
     ],
   };
