@@ -21,11 +21,17 @@ builder.Services.AddHostedService<PingBackgroundService>();
 
 builder.Services.AddCors(options =>
 {
+    //get the nextjs application (front end url) from environment variable
+    var frontEndUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
+
+    if (string.IsNullOrWhiteSpace(frontEndUrl))
+        return;
+
     options.AddPolicy("AllowSpecificOrigins", builder =>
     {
-        builder.WithOrigins("http://localhost:3000")
-        .AllowAnyMethod()
+        builder.WithOrigins(frontEndUrl)
         .AllowAnyHeader()
+        .WithMethods("GET", "POST")
         .AllowCredentials();
     });
 });
